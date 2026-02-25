@@ -1,0 +1,30 @@
+{:tasks {:requires ([babashka.fs :as fs]
+                    [babashka.process :as process])
+
+         :init (do (defn print-args []
+                     (prn (:name (current-task))
+                          *command-line-args*))
+
+                   (defn needs-prep?
+                     []
+                     (not= 0 (-> (process/shell {:continue true :out :string} "clj -Spath") :exit)))
+
+                   (defn run-clojure
+                     [clj-args]
+                     (when (needs-prep?)
+                       (println "-X:deps prep: We need to prepare dependencies..")
+                       (process/shell "clj -X:deps prep")
+                       (println "-X:deps prep: done."))
+                     (println "Executing: clojure" clj-args)
+                     (clojure clj-args)))
+
+         outdated-deps {:doc  "List outdated deps."
+                        :task (do
+                                (when (needs-prep?)
+                                  (println "-X:deps prep: We need to prepare dependencies..")
+                                  (process/shell "clj -X:deps prep")
+                                  (println "-X:deps prep: done."))
+                                (run-clojure "-M:project/outdated"))}
+
+         dev {:doc  "Start up in dev mode."
+              :task (run-clojure (str "-X:repl/rebel" (first *command-line-args*)))}}}

@@ -12,3 +12,10 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
+.lsp/
+.rebel_readline_history
+/**/.lsp/.cache
+/**/.clj-kondo/.lock
+/**/.clj-kondo/inline-configs
+/**/.clj-kondo/.cache
+/**/.clj-kondo/imports

@@ -1,0 +1,9 @@
+{:profile #profile {:development :development
+                    :production  :production}
+
+ :http-server {:server-options {:port #long #or [#env DEMO_HTTP_PORT 8899]}
+               :openapi {:path "/openapi"
+                         :config {:validatorUrl nil
+                                  :urls [{:name "openapi", :url "openapi.json"}]
+                                  :urls.primaryName "openapi"
+                                  :operationsSorter "alpha"}}}}
