@@ -8,7 +8,7 @@
   [event-bus]
   (fn [request]
     (async/put! event-bus {:event-type :todo :action :set-filter :filter-mode (get-in request [:body-params :filter])})
-    {:status 200
+    {:status 204
      :session (assoc (:session request) :filter (get-in request [:body-params :filter]))
      :headers {"content-type" "application/json"}}))
 
@@ -29,7 +29,7 @@
                                     i))
                                 items)))))
       (async/put! event-bus {:event-type :todo :action :toggle-todos})
-      {:status 200
+      {:status 204
        :headers {"content-type" "application/json"}})))
 
 (defn remove-todo
@@ -38,7 +38,7 @@
     (let [id (-> request (get-in [:query-params "id"]) Integer/parseInt)]
       (swap! todo-db (fn [items] (remove #(= id (:id %)) items)))
       (async/put! event-bus {:event-type :todo :action :remove-todo})
-      {:status 200
+      {:status 204
        :headers {"content-type" "application/json"}})))
 
 (defn remove-completed
@@ -46,7 +46,7 @@
   (fn [_request]
     (swap! todo-db (fn [items] (remove #(:done? %) items)))
     (async/put! event-bus {:event-type :todo :action :remove-completed})
-    {:status 200
+    {:status 204
      :headers {"content-type" "application/json"}}))
 
 (defn add-todo
@@ -58,5 +58,5 @@
                          (let [last-id (or (-> items last :id) 0)]
                            (conj items {:id (inc last-id) :title title :done? false})))))
       (async/put! event-bus {:event-type :todo :action :add})
-      {:status 200
+      {:status 204
        :headers {"content-type" "application/json"}})))
